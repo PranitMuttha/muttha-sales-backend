@@ -15,9 +15,16 @@ else:
     SQLALCHEMY_DATABASE_URL = "postgresql://postgres:yourpassword@localhost:5432/muttha_sales"
 
 # 2. Create the engine
-# Note: "check_same_thread" is only needed for SQLite, but safe to leave out for Postgres
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+# 3. Database Dependency (Required for FastAPI imports)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
